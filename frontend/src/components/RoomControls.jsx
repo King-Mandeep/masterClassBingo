@@ -7,6 +7,21 @@ export const RoomControls = ({ setRoomId }) => {
   const [players, setPlayers] = useState([]);
 
 const [loading, setLoading] = useState(false);
+const buttonStyle = (disabled) => ({
+  width:"100%",
+  padding: "12px 20px",
+  borderRadius: "10px",
+  border: "none",
+  background: disabled ? "#374151" : "#6366f1",
+  color: "white",
+  cursor: disabled ? "not-allowed" : "pointer",
+  fontWeight: "bold",
+  transition: "0.2s",
+  boxShadow: disabled
+    ? "none"
+    : "0 4px 14px rgba(99,102,241,0.5)",
+    marginBottom:"15px"
+});
 
   useEffect(() => {
     const socket = connectSocket();
@@ -87,17 +102,7 @@ setLoading(false);
       {/* Create */}
      <button
   onClick={handleCreateRoom}
-  style={{
-    width: "100%",
-    padding: "12px",
-    borderRadius: "10px",
-    border: "none",
-    background: "#6366f1",
-    color: "white",
-    fontWeight: "bold",
-    cursor: "pointer",
-    marginBottom: "15px"
-  }}
+  style={buttonStyle(loading)}
   disabled={loading}
 >
   Create Room 
