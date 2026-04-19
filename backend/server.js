@@ -20,7 +20,7 @@ app.use(express.json());
 
 // CORS middleware
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.CLIENT_URL,
   credentials: true
 }));
 //initialize sockets

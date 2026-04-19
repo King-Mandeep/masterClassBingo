@@ -65,18 +65,18 @@ const isMatch = await argon2.verify(player.password, password);
       expiresIn: "7d",
     });
 
-//     res.cookie("access_token", token, {
+    res.cookie("access_token", token, {
+  httpOnly: true,
+  secure: true,            // REQUIRED on HTTPS (Render/Vercel)
+  sameSite: "none",        // REQUIRED for cross-site cookies
+  maxAge: 48 * 60 * 60 * 1000,
+});
+//  res.cookie("access_token", token, {
 //   httpOnly: true,
-//   secure: true,            // REQUIRED on HTTPS (Render/Vercel)
-//   sameSite: "none",        // REQUIRED for cross-site cookies
+//   secure: false,           
+//   sameSite: "lax",        // REQUIRED for cross-site cookies
 //   maxAge: 24 * 60 * 60 * 1000,
 // });
- res.cookie("access_token", token, {
-  httpOnly: true,
-  secure: false,           
-  sameSite: "lax",        // REQUIRED for cross-site cookies
-  maxAge: 24 * 60 * 60 * 1000,
-});
 
 
  res.json({

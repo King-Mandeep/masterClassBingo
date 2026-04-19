@@ -11,7 +11,7 @@ let rematchVotes = {}; // roomId → Set of users
 const origin = process.env.CLIENT_URL || "http://localhost:5173";
 export function initSockets(httpServer){
     const io= new Server(httpServer,{
-        cors: { origin, methods:["GET","POST",], credentials:true,
+        cors: { origin:process.env.CLIENT_URL, methods:["GET","POST",], credentials:true,
 
          },
     });
@@ -23,7 +23,7 @@ io.use(async(socket, next)=>{
         
         
         
-         const raw = socket.request.headers.cookie;
+         const raw = socket.request.headers.cookie||"";
          console.log("ye bhi chl gya 2");
           if (!raw){console.log("cookies missing");
            return next(new Error("Cookies missing"));}
@@ -31,8 +31,8 @@ io.use(async(socket, next)=>{
            const cookies = cookie.parse(raw);
            console.log("cookies",cookies);
            
-            const token =
-    cookies.access_token || cookies.token || cookies.jwt;
+            const token = socket.handshake.auth?.token ||
+    (cookies.access_token || cookies.token || cookies.jwt);
     console.log("ye bhi chl gya 4");
          // token can be sent via handshake auth or Authorization header
 // const token = socket.handshake.auth?.token ||

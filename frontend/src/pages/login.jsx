@@ -29,7 +29,7 @@ export const Login=()=>{
     e.preventDefault();
     setLoading(true);
     // const API=`http://localhost:3000/auth/login`;
-    const BASE_URL= "http://localhost:3000";
+    const BASE_URL= import.meta.env.VITE_API_URL;;
      const API=`${BASE_URL}/auth/login`;
     setMessage('');
 
