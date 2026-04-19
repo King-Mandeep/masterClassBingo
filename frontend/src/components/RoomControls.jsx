@@ -16,6 +16,7 @@ const buttonStyle = (disabled) => ({
   color: "white",
   cursor: disabled ? "not-allowed" : "pointer",
   fontWeight: "bold",
+  fontSize: "16px",
   transition: "0.2s",
   boxShadow: disabled
     ? "none"
@@ -85,11 +86,12 @@ setLoading(false);
   return (
     <div style={{
   marginTop: "20px",
-  padding: "20px",
+  padding: "16px",
   background: "#111827",
   borderRadius: "16px",
+  width: "100%",
   maxWidth: "500px",
-  marginInline: "auto",
+  margin: "0 auto",
   boxShadow: "0 10px 40px rgba(0,0,0,0.5)"
 }}>
       <h2 style={{
@@ -110,8 +112,9 @@ setLoading(false);
 
       {/* Join */}
      <div style={{
-  display: "flex",
-  gap: "10px"
+   display: "flex",
+  gap: "10px",
+  flexWrap: "wrap"
 }}>
   <input
     type="text"
@@ -119,7 +122,7 @@ setLoading(false);
     value={inputRoom}
     onChange={(e) => setInputRoom(e.target.value)}
     style={{
-      flex: 1,
+       flex: "1 1 100%",
       padding: "10px",
       borderRadius: "8px",
       border: "none",
@@ -132,7 +135,8 @@ setLoading(false);
   <button
     onClick={handleJoinRoom}
     style={{
-      padding: "10px 16px",
+      width: "100%",
+      padding: "10px",
       borderRadius: "8px",
       border: "none",
       background: "#22c55e",
@@ -160,11 +164,12 @@ setLoading(false);
     <div
       key={i}
       style={{
-        padding: "6px 10px",
+         padding: "6px 10px",
         borderRadius: "8px",
         background: "#1f2937",
         marginBottom: "5px",
-        fontSize: "13px"
+        fontSize: "13px",
+        wordBreak: "break-word",
       }}
     >
       👤 {p.slice(-5)}
