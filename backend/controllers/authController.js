@@ -69,7 +69,7 @@ const isMatch = await argon2.verify(player.password, password);
   httpOnly: true,
   secure: true,            // REQUIRED on HTTPS (Render/Vercel)
   sameSite: "none",        // REQUIRED for cross-site cookies
-  maxAge: 48 * 60 * 60 * 1000,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 });
 //  res.cookie("access_token", token, {
 //   httpOnly: true,
