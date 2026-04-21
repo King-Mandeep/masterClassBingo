@@ -7,6 +7,7 @@ export const RoomControls = ({ setRoomId }) => {
   const [players, setPlayers] = useState([]);
 
 const [loading, setLoading] = useState(false);
+const [joinLoading,setJoinLoading]=useState(false);
 const buttonStyle = (disabled) => ({
   width:"100%",
   padding: "12px 20px",
@@ -64,7 +65,7 @@ setLoading(false)
 
   // 🔵 Join Room
   const handleJoinRoom = async() => {
-    setLoading(true);
+    setJoinLoading(true);
     const socket = getSocket();
     if (!socket) return;
 
@@ -79,8 +80,8 @@ setLoading(false)
     socket.emit("room:join", inputRoom);
 
     setRoomId(inputRoom);
-setLoading(false);
-    console.log("Joined room:", inputRoom);
+setJoinLoading(false);
+    // console.log("Joined room:", inputRoom);
   };
 
   return (
@@ -134,17 +135,8 @@ setLoading(false);
 
   <button
     onClick={handleJoinRoom}
-    style={{
-      width: "100%",
-      padding: "10px",
-      borderRadius: "8px",
-      border: "none",
-      background: "#22c55e",
-      color: "white",
-      fontWeight: "bold",
-      cursor: "pointer"
-    }}
-    disabled={loading}
+    disabled={joinLoading}
+    style={buttonStyle(joinLoading)}
   >
     Join
   </button>

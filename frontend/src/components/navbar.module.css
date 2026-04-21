@@ -58,6 +58,7 @@ body {
   list-style: none;
   gap: 4px;
   align-items: center;
+  transition: all 0.3s ease;
 }
 
 
@@ -136,3 +137,35 @@ body {
 .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
 .hamburger.open span:nth-child(2) { opacity: 0; }
 .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+
+@media (max-width: 768px) {
+
+  .navbar {
+    padding: 0 16px;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 64px;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    width: 200px;
+    padding: 15px;
+    gap: 10px;
+    border-left: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    display: none;
+  transition: all 0.3s ease;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+}

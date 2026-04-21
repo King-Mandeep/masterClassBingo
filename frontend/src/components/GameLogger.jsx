@@ -1,38 +1,43 @@
-export const GameLogger = ({ logs }) => {
-  return (
-    <div style={{
-      marginTop: "20px",
-      background: "#020617",
-      borderRadius: "12px",
-      padding: "12px",
-      width: "100%",
-      maxWidth: "500px",
-      marginInline: "auto",
-      boxShadow: "0 8px 30px rgba(0,0,0,0.6)"
-    }}>
-      <div style={{
-        marginBottom: "8px",
-        fontWeight: "bold",
-        color: "#22c55e"
-      }}>
-        Game Logs
-      </div>
+import { useEffect, useRef } from "react";
+export const GameLogger = ({ logs, horizontal }) => {
+  const containerRef = useRef(null);
 
-      <div style={{
-        maxHeight: "150px",
-        overflowY: "auto",
-        fontSize: "13px",
-        color: "#e5e7eb"
-      }}>
-        {logs.map((log, i) => (
-          <div key={i} style={{
-            padding: "2px 0",
-            opacity: 0.9
-          }}>
-            • {log}
-          </div>
-        ))}
-      </div>
+  useEffect(() => {
+    if (horizontal && containerRef.current) {
+      containerRef.current.scrollLeft = containerRef.current.scrollWidth;
+    }
+  }, [logs, horizontal]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        background: "#020617",
+        borderRadius: "12px",
+        padding: "10px",
+        display: "flex",
+        flexDirection: horizontal ? "row" : "column",
+        gap: "10px",
+        overflowX: horizontal ? "auto" : "hidden",
+        overflowY: horizontal ? "hidden" : "auto",
+        maxHeight: horizontal ? "auto" : "150px"
+      }}
+    >
+      {logs.map((log, i) => (
+        <div
+          key={i}
+          style={{
+            whiteSpace: "nowrap",
+            fontSize: "13px",
+            color: "#e5e7eb",
+            padding: horizontal ? "4px 10px" : "2px 0",
+            background: horizontal ? "#111827" : "transparent",
+            borderRadius: "6px"
+          }}
+        >
+          • {log}
+        </div>
+      ))}
     </div>
   );
 };

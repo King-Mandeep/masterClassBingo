@@ -25,7 +25,7 @@ export const Landing = () => {
   const [gameOver, setGameOver] = useState(false);
 const [winner, setWinner] = useState(null);
 const [modalData,setModalData]= useState(null);
-
+const [isMobile,setIsMobile]=useState(window.innerWidth<768);
 
 
 
@@ -58,7 +58,7 @@ const rematchStyle = {
 
 
 const addLog = (msg) => {
-  setLogs(prev => [...prev, msg]);
+  setLogs(prev => [...prev.slice(-20), msg]);
 };
 const clearLog = ()=>{
   setLogs([]);
@@ -67,7 +67,7 @@ const clearLog = ()=>{
   const handleFillBox = async ()=>{
     try{
 const numbers = await makeBox();
-console.log(numbers);
+// console.log(numbers);
 
 setGrid(numbers);
 setIsFilled(true);
@@ -104,7 +104,7 @@ setIsLocked(true);
   };
 
   const handleRematch = () => {
-    console.log("hR function called");
+    // console.log("hR function called");
     
   const socket = getSocket();
   console.log("ROOM ID SENT:", roomIdRef.current);
@@ -132,15 +132,19 @@ const showModal = (message,options = {},btnText)=>{
 const socket = getSocket();
 if(!socket)return;
 roomIdRef.current=roomId;
+const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+   window.addEventListener("resize", handleResize);
 
 socket.on("player:locked",({userId})=>{
   const myId=localStorage.getItem("userId");
-  let locker="Opponent";
+  let locker="You";
   if(userId!==myId){
     setOpponentLocked(true);
-    locker="You";
+    locker="Opponent";
   }
-  console.log("player locked:",userId);
+  // console.log("player locked:",userId);
   addLog(`${locker} locked the board`);
   
 });
@@ -169,7 +173,7 @@ socket.on("game:over", (data) => {
 
   addLog(`Game Over`);
   showModal(`${vijeta} Won!`);
-  clearLog();
+  // clearLog();
   // setGameStarted(false);
   // setOpponentLocked(false);
   // setIsLocked(false);
@@ -181,7 +185,7 @@ socket.on("game:over", (data) => {
 });
 
 socket.on("game:reset", () => {
-  console.log("gameReset comed in frontend");
+  // console.log("gameReset comed in frontend");
   
   setGameStarted(false);
   setOpponentLocked(false);
@@ -200,7 +204,7 @@ setWinner(null);
 });
 
 socket.on("game:onePlayerVoted",({voterId})=>{
-  console.log("on player voted socket on on frontend");
+  // console.log("on player voted socket on on frontend");
   
   let voter= myId==voterId?"You":"Opponent";
   addLog(`${voter} Voted for Rematch/Reset`);
@@ -210,7 +214,12 @@ socket.on("game:onePlayerVoted",({voterId})=>{
 
 return () => {
     socket.off("player:locked");
-    socket.off("game:start");
+  socket.off("game:start");
+  socket.off("number:cut");
+  socket.off("game:over");
+  socket.off("game:reset");
+  socket.off("game:onePlayerVoted");
+  window.removeEventListener("resize", handleResize);
   };
   },[roomId]);
 
@@ -272,6 +281,18 @@ Rematch
 </div>
 
 
+{isMobile && (
+  <div style={{
+    width: "100%",
+    overflowX: "auto",
+    whiteSpace: "nowrap",
+    marginTop: "10px"
+  }}>
+    <GameLogger logs={logs} horizontal />
+  </div>
+)}
+
+
 <div style={{
   display: "flex",
   gap: "20px",
@@ -326,13 +347,7 @@ Rematch
   />
 )}
 </div>
-<div>
-  {opponentLocked && (
-  <p style={{ color: "green" }}>
-    Opponent locked their box 
-  </p>
-)}
-</div>
+
 
 {gameOver && (
   <div style={{
@@ -346,7 +361,7 @@ Rematch
     <h2 style={{
       color: winner === myId ? "#22c55e" : "#ef4444"
     }}>
-      {winner === myId ? "🎉 You Won!" : "💀 You Lost!"}
+      {winner === myId ? " You Won!" : "You Lost!"}
     </h2>
 
     <button
@@ -361,6 +376,7 @@ Rematch
 </div>
 
 <div style={{
+  display: isMobile ? "none" : "block",
    flex: 1,
   position: "sticky",
   top: "100px",
