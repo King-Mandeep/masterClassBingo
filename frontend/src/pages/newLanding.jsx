@@ -179,12 +179,16 @@ socket.on("game:over", (data) => {
   setWinner(data.winner);
 
   addLog(`Game Over`);
-  if(winSoundRef.current&&looseSoundRef){
+  if(winSoundRef.current&&looseSoundRef.current){
     if(myId == data.winner){
+      looseSoundRef.current.pause();   
+    looseSoundRef.current.currentTime = 0;
       winSoundRef.current.currentTime = 0;
       winSoundRef.current.play().catch(()=>{});
     }
     else{
+      winSoundRef.current.pause();
+    winSoundRef.current.currentTime = 0;
       looseSoundRef.current.currentTime = 0;
       looseSoundRef.current.play().catch(()=>{});
     }
