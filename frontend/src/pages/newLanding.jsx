@@ -8,6 +8,7 @@ import { Navbar } from "../components/navbar";
 import Modal from "../components/modalComponent";
 
 export const Landing = () => {
+  const cutSoundRef = useRef(null);
   const winSoundRef = useRef(null);
   const looseSoundRef = useRef(null);
   const roomIdRef = useRef("");
@@ -131,6 +132,8 @@ const showModal = (message,options = {},btnText)=>{
 
 
   useEffect(()=>{
+    cutSoundRef.current = new Audio("/sounds/cutSound.mp3");
+    cutSoundRef.current.volume = 0.4;
     winSoundRef.current = new Audio("/sounds/winSound.mp3");
     winSoundRef.current.volume = 0.5;
     looseSoundRef.current = new Audio("/sounds/looseSound.mp3");
@@ -170,6 +173,10 @@ socket.on("number:cut",(data)=>{
 
   setIsMyTurn(data.nextTurn === myId);
   addLog("Move played");
+   if (cutSoundRef.current) {
+    cutSoundRef.current.currentTime = 0;
+    cutSoundRef.current.play().catch(() => {});
+  }
 });
 
 socket.on("game:over", (data) => {
