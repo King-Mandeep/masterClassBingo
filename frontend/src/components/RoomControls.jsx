@@ -29,10 +29,10 @@ const buttonStyle = (disabled) => ({
     const socket = connectSocket();
 
     // when someone joins
-    socket.on("room:playerJoined", ({ userId }) => {
-      console.log("Player joined:", userId);
-
-      setPlayers(prev => [...prev, userId]);
+    socket.on("room:playerJoined", ({ playerA,
+    playerB }) => {
+      const updatedPlayers = [playerA, playerB].filter(Boolean);
+  setPlayers(updatedPlayers);
     });
 
     return () => {

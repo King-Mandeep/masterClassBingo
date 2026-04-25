@@ -77,12 +77,21 @@ io.use(async(socket, next)=>{
         socket.join(`room:${roomId}`);
         playerRoom[userId] = roomId;
 
-        console.log("ROOM JOIN USER:", userId);
+        // console.log("ROOM JOIN USER:", userId);
+        const room = rooms[roomId];
+
+  let playerA = "";
+  let playerB = "";
+  if (room) {
+    playerA = room.players.playerA?.userId || "";
+    playerB = room.players.playerB?.userId || "";
+  }
 
         console.log(`user ${userId} joined room ${roomId}`);
 
         io.to(`room:${roomId}`).emit("room:playerJoined",{
-            userId
+             playerA,
+    playerB
         });
 
     });
