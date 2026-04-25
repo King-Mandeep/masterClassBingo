@@ -2,7 +2,7 @@ import Player from "../models/player.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 
-const jwtSecret = process.env.jwtSecret||"bingo";
+const jwtSecret = process.env.JWT_SECRET||"bingo";
 
 
 

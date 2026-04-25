@@ -8,7 +8,7 @@ import { getUserFromToken } from "../friendFunctions/authFriends.js";
 const playerRoom = {};
 let rematchVotes = {}; // roomId → Set of users
 
-const origin = process.env.CLIENT_URL || "http://localhost:5173";
+const origin = process.env.CLIENT_URL;
 export function initSockets(httpServer){
     const io= new Server(httpServer,{
         cors: { origin:process.env.CLIENT_URL, methods:["GET","POST",], credentials:true,
@@ -43,8 +43,8 @@ io.use(async(socket, next)=>{
  const player = await getUserFromToken(token); // verifies & returns user
       // attach normalized user info to socket.data
       socket.data.user = {
-        id: player.id.toString(),
-        playerName: player.name,
+        id: player._id.toString(),
+        playerName: player.playerName,
       };
 
        return next();
