@@ -8,6 +8,8 @@ import { Navbar } from "../components/navbar";
 import Modal from "../components/modalComponent";
 
 export const Landing = () => {
+  const winSoundRef = useRef(null);
+  const looseSoundRef = useRef(null);
   const roomIdRef = useRef("");
   const [roomId, setRoomId] = useState("");
   const [isFilled,setIsFilled]=useState(false);
@@ -129,6 +131,11 @@ const showModal = (message,options = {},btnText)=>{
 
 
   useEffect(()=>{
+    winSoundRef.current = new Audio("/sounds/winSound.mp3");
+    winSoundRef.current.volume = 0.5;
+    looseSoundRef.current = new Audio("/sounds/looseSound.mp3");
+    looseSoundRef.current.volume = 0.5;
+
 const socket = getSocket();
 if(!socket)return;
 roomIdRef.current=roomId;
@@ -172,6 +179,16 @@ socket.on("game:over", (data) => {
   setWinner(data.winner);
 
   addLog(`Game Over`);
+  if(winSoundRef.current&&looseSoundRef){
+    if(myId == data.winner){
+      winSoundRef.current.currentTime = 0;
+      winSoundRef.current.play().catch(()=>{});
+    }
+    else{
+      looseSoundRef.current.currentTime = 0;
+      looseSoundRef.current.play().catch(()=>{});
+    }
+  }
   showModal(`${vijeta} Won!`);
   // clearLog();
   // setGameStarted(false);
