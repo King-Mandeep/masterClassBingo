@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { connectSocket, getSocket } from "../services/socket";
 import axios from "axios";
 
 export const RoomControls = ({ setRoomId }) => {
+  const joinSoundRef = useRef(null);
   const [inputRoom, setInputRoom] = useState("");
   const [players, setPlayers] = useState([]);
 
@@ -28,11 +29,17 @@ const buttonStyle = (disabled) => ({
   useEffect(() => {
     const socket = connectSocket();
 
+    joinSoundRef.current = new Audio("/sounds/join.mp3");
+
     // when someone joins
     socket.on("room:playerJoined", ({ playerA,
     playerB }) => {
       const updatedPlayers = [playerA, playerB].filter(Boolean);
   setPlayers(updatedPlayers);
+  if (joinSoundRef.current && joinSoundRef.current.paused) {
+      joinSoundRef.current.currentTime = 0;
+      joinSoundRef.current.play().catch(() => {});
+    }
     });
 
     return () => {
