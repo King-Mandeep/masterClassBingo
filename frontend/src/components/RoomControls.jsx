@@ -83,6 +83,7 @@ const roomId = res.data.roomId;
 
   }catch(error){
  if (error.response) {
+   localStorage.removeItem("userId");
       // Server responded with status code (400, 401, 500 etc.)
       showModal(`${error.response.data.message}`);
     }else if (error.request) {
@@ -123,6 +124,7 @@ socket.emit("room:join", inputRoom);
 
   }catch(error){
 if (error.response) {
+   localStorage.removeItem("userId");
       showModal(error.response.data.message);
 
     } else if (error.request) {
