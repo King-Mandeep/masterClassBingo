@@ -19,7 +19,7 @@ export async function getUserFromToken(token){
         console.log(err);
         
         
-        throw new Error("Invalid or expired token");
+        throw new Error("Invalid or expired token, You have to Login.");
     }
 
 const id = decoded.ID || decoded._id||decoded.id;

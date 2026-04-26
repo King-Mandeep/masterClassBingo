@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { connectSocket, getSocket } from "../services/socket";
 import axios from "axios";
+import Modal from "./modalComponent";
 
 export const RoomControls = ({ setRoomId }) => {
   const joinSoundRef = useRef(null);
@@ -9,6 +10,19 @@ export const RoomControls = ({ setRoomId }) => {
 
 const [loading, setLoading] = useState(false);
 const [joinLoading,setJoinLoading]=useState(false);
+const [modalData,setModalData]= useState(null);
+
+const showModal = (message,options = {},btnText)=>{
+  const { onBtnClick } = options;
+
+  setModalData({
+    message: message,
+    showBtn:btnText?true:false,
+    btnText:btnText,
+    onBtnClick:onBtnClick
+  });
+};
+
 const buttonStyle = (disabled) => ({
   width:"100%",
   padding: "12px 20px",
@@ -51,11 +65,12 @@ const buttonStyle = (disabled) => ({
   const handleCreateRoom = async() => {
     setLoading(true);
     const socket = getSocket();
-    if (!socket) return;
+    if (!socket)  {
+  setLoading(false);
+  return;
+}
 
-    // simple random roomId
-    // const newRoomId = Math.random().toString(36).substring(2, 8);
-
+  try{
 const res = await axios.post(`${import.meta.env.VITE_API_URL}/room/createRoom`, {}, {
   withCredentials: true
 });
@@ -63,11 +78,22 @@ const res = await axios.post(`${import.meta.env.VITE_API_URL}/room/createRoom`, 
 const roomId = res.data.roomId;
 
     socket.emit("room:join",roomId);
-
-    setRoomId(roomId);
+     setRoomId(roomId);
     setInputRoom(roomId);
-setLoading(false)
-    console.log("Room created:",roomId);
+
+  }catch(error){
+ if (error.response) {
+      // Server responded with status code (400, 401, 500 etc.)
+      showModal(`${error.response.data.message}`);
+    }else if (error.request) {
+      showModal("Network error. Please check your connection.");
+    }else {
+      console.log("Error:", error.message);
+      showModal("Something went wrong.");
+    }
+  }finally{
+setLoading(false);
+  }
   };
 
   // 🔵 Join Room
@@ -102,6 +128,15 @@ setJoinLoading(false);
   margin: "0 auto",
   boxShadow: "0 10px 40px rgba(0,0,0,0.5)"
 }}>
+ {modalData && (
+        <Modal
+          message={modalData.message}
+          showBtn={modalData.showBtn}
+          btnText={modalData.btnText}
+          onBtnClick={modalData.onBtnClick}
+          onClose={() => setModalData(null)}
+        />
+      )}
       <h2 style={{
   textAlign: "center",
   marginBottom: "15px"

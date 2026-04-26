@@ -15,7 +15,7 @@ export const authenticateUser=async(req,res,next)=>{
     const token = fromHeader || fromCookie;
     // console.log(token);
     
-    if (!token) return res.status(401).json({ message: "Authorization token missing." });
+    if (!token) return res.status(401).json({ message: "Authorization token missing. Please Login." });
 const player = await getUserFromToken(token);//may throw
 
 req.user = {
