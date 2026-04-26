@@ -100,21 +100,41 @@ setLoading(false);
   const handleJoinRoom = async() => {
     setJoinLoading(true);
     const socket = getSocket();
-    if (!socket) return;
+    if (!socket) {
+    setJoinLoading(false);
+    return;
+  }
 
-    if (!inputRoom) return alert("Enter room ID");
+    if (!inputRoom) {
+    setJoinLoading(false);
+    showModal("Please enter room ID");
+    return;
+  }
 
+  try{
  await axios.post(
     `${import.meta.env.VITE_API_URL}/room/joinRoom`,
     { roomId: inputRoom }, 
     { withCredentials: true }
   );
-
-    socket.emit("room:join", inputRoom);
+socket.emit("room:join", inputRoom);
 
     setRoomId(inputRoom);
+
+  }catch(error){
+if (error.response) {
+      showModal(error.response.data.message);
+
+    } else if (error.request) {
+      showModal("Network error. Please check your connection.");
+
+    } else {
+      console.log("Error:", error.message);
+      showModal("Something went wrong.");
+    }
+  }finally{
 setJoinLoading(false);
-    // console.log("Joined room:", inputRoom);
+  }
   };
 
   return (
