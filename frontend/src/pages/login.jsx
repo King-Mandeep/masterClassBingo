@@ -5,6 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { LoadingComponent } from "../components/loadingComponent";
 import { Navbar } from "../components/navbar";
+import { connectSocket } from "../services/socket";
 // import {BASE_URL} from "../api";
 export const Login=()=>{
 
@@ -47,11 +48,13 @@ export const Login=()=>{
     contactNumber: "",
     password: ""
   });
-
+setTimeout(() => {
+  connectSocket(); 
+}, 100);
    // Redirect after login (e.g., to homepage)
       setTimeout(() => {
         navigate("/");
-      }, 2000);
+      });
     
 //   console.log(res);
     }

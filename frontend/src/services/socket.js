@@ -4,7 +4,10 @@ import { io } from "socket.io-client";
 let socket = null;
 
 export const connectSocket = () => {
-  if (!socket) {
+   if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
     socket = io(import.meta.env.VITE_API_URL, {
       withCredentials: true,
       transports: ["websocket","polling"],
@@ -21,7 +24,7 @@ export const connectSocket = () => {
     socket.on("connect_error", (err) => {
       console.error("Socket error:", err.message);
     });
-  }
+  
 
   return socket;
 };
