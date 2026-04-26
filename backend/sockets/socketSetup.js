@@ -134,16 +134,25 @@ room.processingMove = true;
    }
 
    //validate turn
-   if(room.turn !== userId)return;
+   if(room.turn !== userId){
+  room.processingMove = false;
+  return;
+}
 
    //validate value
-   if(currentPlayer.grid[index]!==value)return;
+   if(currentPlayer.grid[index]!==value){
+  room.processingMove = false;
+  return;
+}
 
  const row = Math.floor(index / 5);
   const col = index % 5;
 
    // prevent double cut
-  if (currentPlayer.marked[row][col] === 1) return;
+  if (currentPlayer.marked[row][col] === 1){
+  room.processingMove = false;
+  return;
+}
 
   // cut current player
   currentPlayer.marked[row][col] = 1;
