@@ -160,8 +160,13 @@ socket.on("player:locked",({userId})=>{
 });
 
 socket.on("game:start",({turn})=>{
+  console.log("comes in game start");
+  
   setGameStarted(true);
   const myId= localStorage.getItem("userId");
+  console.log(`The turn is : ${turn}`);
+  console.log(`my id is :${myId}`);
+  
   setIsMyTurn(turn===myId);
   addLog("Game Started")
 });
@@ -171,6 +176,10 @@ socket.on("number:cut",(data)=>{
 
   const myId=localStorage.getItem("userId");
 
+  console.log(`data.nextTurn is: ${data.nextTurn}`);
+  console.log(`my id is: ${myId}`);
+  
+  
   setIsMyTurn(data.nextTurn === myId);
   addLog("Move played");
    if (cutSoundRef.current) {
