@@ -1,4 +1,6 @@
+import { playBotMove } from "../friendFunctions/botFriends.js";
 import { make2dArray } from "../friendFunctions/create2dArray.js";
+import { randomArray } from "../friendFunctions/randomArray.js";
 import { rooms } from "../memory/room.js";
 import { getIO } from "../sockets/io.js";
 
@@ -58,6 +60,25 @@ let player;
   player.marked = make2dArray();
   player.locked = true;
 
+//playing with bot logic 
+const opponent = player === room.players.playerA ? room.players.playerB : room.players.playerA;
+//bot auto lock logic
+if( opponent?.isBot && !opponent.locked ){
+  console.log("bot is locking...");
+
+  //generate random grid
+const numbers = randomArray();
+opponent.grid = numbers;
+  opponent.marked = make2dArray();
+  opponent.locked = true;
+
+   io.to(`room:${roomId}`).emit("player:locked", {
+    userId: "BOT"
+  });
+  
+}
+
+
   // notify lock
 io.to(`room:${roomId}`).emit("player:locked", { userId });
 
@@ -77,7 +98,14 @@ if(playerA?.locked && playerB?.locked){
       io.to(`room:${roomId}`).emit("game:start", {
       turn: room.turn
    });
-   console.log("Game started in room:", roomId);}
+   console.log("Game started in room:", roomId);
+  
+   if (room.turn === "BOT") {
+  setTimeout(() => {
+    playBotMove(roomId, io);
+  }, 900);
+}
+  }
   
 
   res.json({

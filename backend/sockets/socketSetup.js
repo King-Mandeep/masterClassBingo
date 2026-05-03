@@ -4,6 +4,7 @@ import { setIO } from "./io.js";
 import { rooms } from "../memory/room.js";
 import { countBingoLines } from "../friendFunctions/checkBingoLines.js";
 import { getUserFromToken } from "../friendFunctions/authFriends.js";
+import { playBotMove } from "../friendFunctions/botFriends.js";
 
 const playerRoom = {};
 let rematchVotes = {}; // roomId → Set of users
@@ -232,6 +233,14 @@ io.to(`user:${playerB.userId}`).emit("number:cut", {
 });
 
 
+//play bot move if playing with bot
+if (room.turn === "BOT") {
+  setTimeout(() => {
+    playBotMove(roomId, io);
+  }, 800);
+}
+
+
 room.processingMove = false;
 
 
@@ -267,6 +276,9 @@ console.log(userId);
   const playerB = room.players.playerB.userId;
   console.log("yhan tk age");
   const otherUserId =userId===playerA?playerB:playerA;
+   if(otherUserId==="BOT"){
+    rematchVotes[roomId].add(otherUserId);
+  }
   
 
   // both players agreed

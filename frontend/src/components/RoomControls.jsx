@@ -137,6 +137,25 @@ setJoinLoading(false);
   }
   };
 
+  const handlePlayWithBot = async () => {
+  const socket = getSocket();
+  if (!socket){ setJoinLoading(false);
+     return};
+
+  const res = await axios.post(
+    `${import.meta.env.VITE_API_URL}/bot/createBotRoom`,
+    {},
+    { withCredentials: true }
+  );
+
+  const roomId = res.data.roomId;
+
+  socket.emit("room:join", roomId);
+
+  setRoomId(roomId);
+  setInputRoom(roomId);
+};
+
   return (
     <div style={{
   marginTop: "20px",
@@ -202,6 +221,12 @@ setJoinLoading(false);
   >
     Join
   </button>
+  <button
+  onClick={handlePlayWithBot}
+  style={{ ...buttonStyle(false), background: "#f59e0b" }}
+>
+  Play vs Computer 
+</button>
 </div>
 
       {/* Info */}
