@@ -10,6 +10,7 @@ export const RoomControls = ({ setRoomId }) => {
 
 const [loading, setLoading] = useState(false);
 const [joinLoading,setJoinLoading]=useState(false);
+const [playBotLoading,setPlayBotLoading]=useState(false);
 const [modalData,setModalData]= useState(null);
 
 const showModal = (message,options = {},btnText)=>{
@@ -138,11 +139,12 @@ setJoinLoading(false);
   };
 
   const handlePlayWithBot = async () => {
-  const socket = getSocket();
-  if (!socket){ setJoinLoading(false);
+    setPlayBotLoading(true);
+    const socket = getSocket();
+  if (!socket){ setPlayBotLoading(false);
      return};
-
-  const res = await axios.post(
+    try{
+const res = await axios.post(
     `${import.meta.env.VITE_API_URL}/bot/createBotRoom`,
     {},
     { withCredentials: true }
@@ -151,9 +153,24 @@ setJoinLoading(false);
   const roomId = res.data.roomId;
 
   socket.emit("room:join", roomId);
-
-  setRoomId(roomId);
+   setRoomId(roomId);
   setInputRoom(roomId);
+    }catch(error){
+if (error.response) {
+      console.log("Server Error:", error.response.data.message);
+      showModal(error.response.data.message);
+
+    } else if (error.request) {
+      console.log("Network Error:", error.request);
+      showModal("Network error. Please check your connection.");
+
+    } else {
+      console.log("Error:", error.message);
+      showModal("Something went wrong.");
+    }
+    }finally{
+setPlayBotLoading(false);
+    }
 };
 
   return (
@@ -223,7 +240,8 @@ setJoinLoading(false);
   </button>
   <button
   onClick={handlePlayWithBot}
-  style={{ ...buttonStyle(false), background: "#f59e0b" }}
+  style={buttonStyle(playBotLoading)}
+  disabled={playBotLoading}
 >
   Play vs Computer 
 </button>
