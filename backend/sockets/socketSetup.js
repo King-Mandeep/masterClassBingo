@@ -5,9 +5,11 @@ import { rooms } from "../memory/room.js";
 import { countBingoLines } from "../friendFunctions/checkBingoLines.js";
 import { getUserFromToken } from "../friendFunctions/authFriends.js";
 import { playBotMove } from "../friendFunctions/botFriends.js";
+import { generateRoomId } from "../friendFunctions/generateRoomId.js";
 
 const playerRoom = {};
 let rematchVotes = {}; // roomId → Set of users
+const waitingPlayers = [];
 
 const origin = process.env.CLIENT_URL;
 export function initSockets(httpServer){
@@ -44,7 +46,7 @@ io.use(async(socket, next)=>{
  const player = await getUserFromToken(token); // verifies & returns user
       // attach normalized user info to socket.data
       socket.data.user = {
-        id: player._id.toString(),
+        id: String(player._id),
         playerName: player.playerName,
       };
 
@@ -306,6 +308,88 @@ console.log("Rematched from backed");
   io.to(`user:${otherUserId}`).emit("game:onePlayerVoted",{voterId:userId});
 });
 
+//online player /random player
+socket.on("match:find", () => {
+  const userId = socket.data.user.id; // you already attach this in auth
+const alreadyWaiting = waitingPlayers.some(p => p.userId === userId);
+
+if (alreadyWaiting) {
+  // console.log(" Already in queue:", userId);
+
+  socket.emit("match:error", {
+    message: "You are already searching for a match"
+  });
+
+  return;
+}
+  // console.log("🔍 Finding match for:", userId);
+
+  // 🟢 If no one waiting → add to queue
+  if (waitingPlayers.length === 0) {
+    waitingPlayers.push({
+      userId,
+      socketId: socket.id
+    });
+
+    // console.log("🕒 Added to waiting queue:", userId);
+
+    socket.emit("match:waiting");
+  } 
+  // 🔵 If someone waiting → match them
+  else {
+    const opponent = waitingPlayers.shift();
+
+    // console.log("Match found:", userId, "vs", opponent.userId);
+
+    //  Create room
+    const roomId = generateRoomId();
+
+    rooms[roomId] = {
+      roomId,
+      players: {
+        playerA: {
+          userId: opponent.userId,
+          grid: [],
+          marked: [],
+          locked: false
+        },
+        playerB: {
+          userId: userId,
+          grid: [],
+          marked: [],
+          locked: false
+        }
+      },
+      turn: null,
+      gameStarted: false,
+      processingMove: false
+    };
+
+    playerRoom[userId] = roomId;
+playerRoom[opponent.userId] = roomId;
+
+    // join both sockets to room
+    socket.join(`room:${roomId}`);
+    io.sockets.sockets.get(opponent.socketId)?.join(`room:${roomId}`);
+
+    //  send roomId to both
+    socket.emit("match:found", { roomId });
+    io.to(opponent.socketId).emit("match:found", { roomId });
+  }
+});
+
+socket.on("match:cancel", () => {
+  const userId = socket.data.user.id;
+
+  console.log("❌ Cancel matchmaking:", userId);
+
+  const index = waitingPlayers.findIndex(p => p.userId === userId);
+
+  if (index !== -1) {
+    waitingPlayers.splice(index, 1);
+  }
+});
+
 
 
       socket.on("disconnect",(reason)=>{
@@ -314,12 +398,46 @@ console.log("Rematched from backed");
 
   // const roomId = rooms[userId];
   // const playerRoom = {}; // userId → roomId
+  // remove from matchmaking queue
+const index = waitingPlayers.findIndex(p => p.userId === userId);
+if (index !== -1) {
+  // console.log(" Removing from queue (disconnect):", userId);
+  waitingPlayers.splice(index, 1);
+}
+
 const roomId = playerRoom[userId];
   if(!roomId) return;
 
   const room = rooms[roomId];
 
   if(!room) return;
+
+    if (room) {
+  const playerA = room.players.playerA;
+  const playerB = room.players.playerB;
+
+  //  If game NOT started → just remove player
+  if (!room.gameStarted) {
+    if (playerA?.userId === userId) {
+      room.players.playerA = null;
+    } else if (playerB?.userId === userId) {
+      room.players.playerB = null;
+    }
+
+    // send updated players to remaining user
+    const updatedA = room.players.playerA?.userId || "";
+    const updatedB = room.players.playerB?.userId || "";
+
+    io.to(`room:${roomId}`).emit("room:playerJoined", {
+      playerA: updatedA,
+      playerB: updatedB
+    });
+
+    // console.log("👋 Player left before game start:", userId);
+
+    return;
+  }
+}
 
   const playerA = room.players.playerA;
   const playerB = room.players.playerB;

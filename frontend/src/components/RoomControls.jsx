@@ -12,6 +12,7 @@ const [loading, setLoading] = useState(false);
 const [joinLoading,setJoinLoading]=useState(false);
 const [playBotLoading,setPlayBotLoading]=useState(false);
 const [modalData,setModalData]= useState(null);
+const [isSearching, setIsSearching] = useState(false);
 
 const showModal = (message,options = {},btnText)=>{
   const { onBtnClick } = options;
@@ -43,7 +44,7 @@ const buttonStyle = (disabled) => ({
 
   useEffect(() => {
     const socket = connectSocket();
-
+if (!socket) return;
     joinSoundRef.current = new Audio("/sounds/join.mp3");
 
     // when someone joins
@@ -57,8 +58,33 @@ const buttonStyle = (disabled) => ({
     }
     });
 
+socket.on("match:waiting", () => {
+    console.log("Waiting for opponent...");
+    // optional: show loader
+  });
+
+   socket.on("match:found", ({ roomId }) => {
+    console.log("Match found:", roomId);
+setIsSearching(false);
+setPlayers([]);
+    // join room (reuse your existing logic)
+    socket.emit("room:join", roomId);
+
+    setRoomId(roomId);
+  });
+
+
+  socket.on("match:error", ({ message }) => {
+  setIsSearching(false);
+
+  showModal(message);
+});
+
     return () => {
       socket.off("room:playerJoined");
+      socket.off("match:waiting");
+    socket.off("match:found");
+    socket.off("match:error");
     };
   }, []);
 
@@ -173,6 +199,28 @@ setPlayBotLoading(false);
     }
 };
 
+const handlePlayOnline=()=>{
+  setIsSearching(true);
+  const socket = getSocket();
+ if (!socket){
+  setIsSearching(false);
+
+  showModal("Unable to connect to server");
+
+  return;
+}
+
+  socket.emit("match:find");
+}
+
+const handleCancelSearch = () => {
+  const socket = getSocket();
+  if (!socket) return;
+
+  socket.emit("match:cancel");
+  setIsSearching(false);
+};
+
   return (
     <div style={{
   marginTop: "20px",
@@ -245,6 +293,21 @@ setPlayBotLoading(false);
 >
   Play vs Computer 
 </button>
+
+{
+  !isSearching&&(<button
+  onClick={handlePlayOnline}
+  style={buttonStyle(isSearching)}
+  disabled={isSearching}
+>
+  {isSearching ? "Searching..." : "Play vs Someone"} 
+</button>)
+}
+{isSearching && (
+  <button disabled={!isSearching} style={buttonStyle(!isSearching)} onClick={handleCancelSearch}>
+    Cancel Search....
+  </button>
+)}
 </div>
 
       {/* Info */}
