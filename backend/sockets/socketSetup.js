@@ -104,7 +104,7 @@ io.use(async(socket, next)=>{
 });
 
 //cutting values
-socket.on("cut:number",({roomId,index,value})=>{
+socket.on("cut:number",async({roomId,index,value})=>{
     if (index < 0 || index > 24) return;
   const userId= socket.data.user.id;
     const room = rooms[roomId];
