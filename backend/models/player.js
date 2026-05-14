@@ -10,6 +10,27 @@ const playerSchema = new mongoose.Schema({
     password:{
         type:String,required:true,select:false
     },
+    tokens:{
+        type:BigInt,default:100
+    },
+     gamesAnalytics:{
+        
+            totalGames: {
+    type: Number,
+    default: 0,
+  },
+
+  wins: {
+    type: Number,
+    default: 0,
+  },
+
+  losses: {
+    type: Number,
+    default: 0,
+  },
+        
+    },
 },
 {timestamps:true});
 

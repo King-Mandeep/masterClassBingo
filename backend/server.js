@@ -8,6 +8,7 @@ import boxRoutes from "./routes/boxRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
 import botRoutes from "./routes/botRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import connectDB from "./config/db.js";
 import cookieParser from 'cookie-parser';
 
@@ -35,6 +36,7 @@ app.use("/box",boxRoutes);
 app.use("/auth",authRoutes);
 app.use("/room",roomRoutes);
 app.use("/bot",botRoutes);
+app.use("/user",userRoutes);
 
 
 

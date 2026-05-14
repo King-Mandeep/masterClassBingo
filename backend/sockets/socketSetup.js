@@ -6,6 +6,7 @@ import { countBingoLines } from "../friendFunctions/checkBingoLines.js";
 import { getUserFromToken } from "../friendFunctions/authFriends.js";
 import { playBotMove } from "../friendFunctions/botFriends.js";
 import { generateRoomId } from "../friendFunctions/generateRoomId.js";
+import Player from "../models/player.js";
 
 const playerRoom = {};
 let rematchVotes = {}; // roomId → Set of users
@@ -200,6 +201,31 @@ io.to(`user:${playerB.userId}`).emit("number:cut", {
     const winner =
     currentPlayer.userId;
 
+    const loser =
+  winner === playerA.userId
+    ? playerB.userId
+    : playerA.userId;
+
+    if(room.isOnlineGame){
+ try{
+ await Player.findByIdAndUpdate(winner, {
+  $inc: {
+    "gamesAnalytics.totalGames": 1,
+    "gamesAnalytics.wins": 1,
+  },
+});
+
+await Player.findByIdAndUpdate(loser, {
+  $inc: {
+    "gamesAnalytics.totalGames": 1,
+    "gamesAnalytics.losses": 1,
+  },
+});
+    }catch(err){
+console.log("Leaderboard update failed:", err.message);
+    }
+    }
+
   io.to(`room:${roomId}`).emit("game:over",{
     winner,
     playerAmarked: playerA.marked,
@@ -346,6 +372,7 @@ if (alreadyWaiting) {
 
     rooms[roomId] = {
       roomId,
+      isOnlineGame: true,
       players: {
         playerA: {
           userId: opponent.userId,

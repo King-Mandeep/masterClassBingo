@@ -16,6 +16,16 @@ export const Navbar=()=>{
     <li><a onClick={()=>{navigate("/");
       setMenuOpen(false);
     }} className={styles.active}>Playground</a></li>
+    {/* {localStorage.getItem("userId")&&( <li>
+  <a onClick={() => navigate("/leaderboard")}>
+    Leaderboard
+  </a>
+</li>)} */}
+   {localStorage.getItem("userId")&&( <li>
+  <a onClick={() => navigate("/leaderboard")}>
+    Leaderboard
+  </a>
+</li>)}
      {
         localStorage.getItem("userId")?(
 <LogoutBtn/>
