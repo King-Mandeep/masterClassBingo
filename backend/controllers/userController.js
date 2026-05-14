@@ -46,7 +46,7 @@ export const getLeaderboard = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: "Failed to fetch leaderboard",
+      message: "Failed to fetch leaderboard, You have to login.",
       err: err.message,
     });
   }
