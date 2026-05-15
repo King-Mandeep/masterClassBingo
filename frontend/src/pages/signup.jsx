@@ -108,13 +108,33 @@ export const Signup = () => {
           placeholder="Set up a password!"
           required
         />
-        <input
+        {/* <input
           name="contactNumber"
           value={formData.contactNumber}
           onChange={handleChange}
           type="text"
           placeholder="We want your Phone Number!"
-        />
+        /> */}
+        <input
+  name="contactNumber"
+  value={formData.contactNumber}
+  onChange={(e) => {
+    const value = e.target.value.replace(/\D/g, ""); // remove non-digits
+
+    if (value.length <= 10) {
+      setFormData((prev) => ({
+        ...prev,
+        contactNumber: value,
+      }));
+    }
+  }}
+  type="text"
+  placeholder="We want your Phone Number!"
+  required
+  maxLength={10}
+  pattern="\d{10}"
+  title="Please enter correct contact number."
+/>
 
         <button disabled={disable} type="submit" className={styles.signupButton}>
           Join The Master Community
