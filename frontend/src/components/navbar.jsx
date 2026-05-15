@@ -26,6 +26,11 @@ export const Navbar=()=>{
     Leaderboard
   </a>
 </li>)}
+{localStorage.getItem("userId")&&(<li>
+  <a onClick={() => navigate("/profile")}>
+    Profile
+  </a>
+</li>)}
      {
         localStorage.getItem("userId")?(
 <LogoutBtn/>

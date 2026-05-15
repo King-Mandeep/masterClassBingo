@@ -30,7 +30,7 @@ const buttonStyle = (disabled) => ({
   padding: "12px 20px",
   borderRadius: "10px",
   border: "none",
-  background: disabled ? "#374151" : "#6366f1",
+  background: disabled ? "#5c5e5e" : "#7a1420",
   color: "white",
   cursor: disabled ? "not-allowed" : "pointer",
   fontWeight: "bold",
@@ -225,7 +225,7 @@ const handleCancelSearch = () => {
     <div style={{
   marginTop: "20px",
   padding: "16px",
-  background: "#111827",
+  background: "#8f5836",
   borderRadius: "16px",
   width: "100%",
   maxWidth: "500px",
@@ -326,7 +326,7 @@ const handleCancelSearch = () => {
       style={{
          padding: "6px 10px",
         borderRadius: "8px",
-        background: "#1f2937",
+        background: "#b04920",
         marginBottom: "5px",
         fontSize: "13px",
         wordBreak: "break-word",
